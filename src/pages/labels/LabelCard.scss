@@ -1,0 +1,58 @@
+.label-card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-direction: column;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .label-header {
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      color: #1f2937;
+    }
+  }
+
+  .label-body {
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
+
+    .label-color {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 500;
+      color: white;
+      font-size: 0.75rem;
+      text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .label-footer {
+    margin-top: auto;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .label-delete-button {
+    background-color: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #dc2626;
+    }
+  }
+}
