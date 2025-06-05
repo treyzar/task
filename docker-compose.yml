@@ -32,16 +32,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   hasura-init:
     image: postgres:13-alpine
     depends_on:
-      - postgres
-      - graphql-engine
+      postgres:
+        condition: service_healthy
+      graphql-engine:
+        condition: service_healthy
     volumes:
       - ./hasura/migrations:/migrations
       - ./init-hasura.sh:/init-hasura.sh
-    command: ["sh", "/init-hasura.sh"]
+    command: ["sh", "-c", "tr -d '\\r' < /init-hasura.sh > /tmp/init-hasura.sh && sh /tmp/init-hasura.sh"]
     restart: on-failure
 
 volumes:
