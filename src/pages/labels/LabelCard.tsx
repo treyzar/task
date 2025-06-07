@@ -1,59 +1,57 @@
 import React from "react";
-import { EditLabelButton } from "../../features/edit-label/EditLabelButton";
-import { graphqlClient } from "../../shared/api/graphqlClient";
+import { DeleteLabelButton } from "../../features/delete-label/DeleteLabelButton";
+import type { Label } from "../../entities/label/label.types";
+import { Modal } from "../../shared/ui/Modal";
+import { EditLabelForm } from "../../features/edit-label/EditLabelForm";
 import './LabelCard.scss'
+
 interface Props {
-  label: {
-    id: number;
-    caption: string;
-    color: string;
-  };
+  label: Label;
   onDeleted: () => void;
 }
 
 export const LabelCard: React.FC<Props> = ({ label, onDeleted }) => {
-  const handleDelete = async () => {
-    if (window.confirm("Удалить метку?")) {
-      await graphqlClient({
-        query: `
-          mutation DeleteLabel($id: Int!) {
-            delete_labels_by_pk(id: $id) {
-              id
-            }
-          }
-        `,
-        variables: { id: label.id },
-      });
-      onDeleted();
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   return (
-    <div className="label-card">
-      <div className="label-header">
-        <h3>{label.caption}</h3>
-      </div>
-      <div className="label-body">
-        <p>
-          Цвет:
-          <span
-            className="label-color"
+    <>
+      <div 
+        className="label-card"
+        style={{ "--label-color": label.color } as React.CSSProperties}
+      >
+        <div className="label-card__header">
+          <div 
+            className="label-card__color"
             style={{ backgroundColor: label.color }}
-          >
-            {label.color}
-          </span>
-        </p>
+          />
+          <h3 className="label-card__title">{label.caption}</h3>
+        </div>
+        
+        <div className="label-card__actions">
+          <button className="edit-button" onClick={() => setIsModalOpen(true)}>
+            ✏️ Редактировать
+          </button>
+          <DeleteLabelButton labelId={label.id} onDeleted={onDeleted} />
+        </div>
       </div>
-      <div className="label-footer">
-        <EditLabelButton label={label} onUpdated={onDeleted} />
-        <button
-          type="button"
-          className="label-delete-button"
-          onClick={handleDelete}
-        >
-          🗑 Удалить
-        </button>
-      </div>
-    </div>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+      >
+        <div className="modal-content">
+          <h3 className="modal-title">Редактировать метку</h3>
+          <EditLabelForm
+            labelId={label.id}
+            caption={label.caption}
+            color={label.color}
+            onUpdated={() => {
+              onDeleted();
+              setIsModalOpen(false);
+            }}
+          />
+        </div>
+      </Modal>
+    </>
   );
 };

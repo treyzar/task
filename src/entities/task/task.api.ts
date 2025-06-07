@@ -3,11 +3,12 @@ import type { Task } from "./task.types";
 
 const GET_TASKS = `
   query GetAllTasks {
-    tasks {
+    tasks(order_by: [{created_at: asc}, {id: asc}]) {
       id
       title
       description
       assignee_id
+      created_at
       assignee {
         id
         first_name

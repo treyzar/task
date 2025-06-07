@@ -30,6 +30,14 @@ const UPDATE_LABEL_MUTATION = `
   }
 `;
 
+const DELETE_LABEL_MUTATION = `
+  mutation DeleteLabel($id: Int!) {
+    delete_labels_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
 export const getLabels = async (): Promise<Label[]> => {
   const result = await graphqlClient<{ labels: Label[] }>({
     query: GET_LABELS,
@@ -56,5 +64,12 @@ export const updateLabel = async (
   await graphqlClient({
     query: UPDATE_LABEL_MUTATION,
     variables: { id: labelId, caption, color },
+  });
+};
+
+export const deleteLabel = async (labelId: number): Promise<void> => {
+  await graphqlClient({
+    query: DELETE_LABEL_MUTATION,
+    variables: { id: labelId },
   });
 };

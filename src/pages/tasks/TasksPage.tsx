@@ -1,7 +1,7 @@
 import React from "react";
 import { TaskList } from "./TasksList";
 import { CreateTaskForm } from "../../features/create-task/CreateTaskForm";
-import { getTasks } from "../../entities/task/task.api";
+import { getTasks, getTaskById } from "../../entities/task/task.api";
 import type { Task } from "../../entities/task/task.types";
 import { getUsers } from "../../entities/user/user.api";
 import type { User } from "../../entities/user/user.types";
@@ -68,9 +68,15 @@ export const TasksPage: React.FC = () => {
     setTasks(data);
   };
 
-  const handleUpdate = async () => {
-    const data = await getTasks();
-    setTasks(data);
+  const handleUpdate = async (taskId: number) => {
+    const updatedTask = await getTaskById(taskId);
+    if (updatedTask) {
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === taskId ? updatedTask : task
+        )
+      );
+    }
   };
 
   if (loading) return <div>Загрузка...</div>;
@@ -129,7 +135,7 @@ export const TasksPage: React.FC = () => {
       {editTaskId && (
         <EditTaskForm
           taskId={editTaskId}
-          onTaskUpdated={handleUpdate}
+          onTaskUpdated={() => handleUpdate(editTaskId)}
           onClose={() => setEditTaskId(null)}
         />
       )}

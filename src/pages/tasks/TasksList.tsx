@@ -15,6 +15,7 @@ export const TaskList: React.FC<Props> = ({ setTasks, tasks, onEdit }) => {
     const data = await getTasks();
     setTasks(data);
   };
+
   return (
     <ul className="task-list">
       {tasks.map((task) => (
@@ -24,7 +25,6 @@ export const TaskList: React.FC<Props> = ({ setTasks, tasks, onEdit }) => {
             {task.description || "Описание отсутствует"}
           </p>
           <p className="task-list__assignee">
-            Исполнитель:
             {task.assignee
               ? `${task.assignee.first_name} ${task.assignee.last_name}`
               : "Не назначен"}
@@ -40,12 +40,12 @@ export const TaskList: React.FC<Props> = ({ setTasks, tasks, onEdit }) => {
               </span>
             ))}
           </div>
-
-          <button className="task-edit-button" onClick={() => onEdit(task.id)}>
-            ✏️ Редактировать
-          </button>
-
-          <DeleteTaskButton taskId={task.id} onDeleted={handleUpdate} />
+          <div className="task-list__actions">
+            <button className="task-edit-button" onClick={() => onEdit(task.id)}>
+              ✏️ Редактировать
+            </button>
+            <DeleteTaskButton taskId={task.id} onDeleted={handleUpdate} />
+          </div>
         </li>
       ))}
     </ul>
