@@ -16,6 +16,7 @@ export type Task = {
   title: string;
   description: string | null;
   assignee_id: number | null;
+  created_at: string;
   assignee: User | null;
   task_labels: Array<{
     label: Label;

@@ -1,4 +1,6 @@
-import React, { useEffect } from "react";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './Modal.scss';
 
 interface Props {
   isOpen: boolean;
@@ -7,29 +9,17 @@ interface Props {
 }
 
 export const Modal: React.FC<Props> = ({ isOpen, onClose, children }) => {
-  const handleCloseOnEscape = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleCloseOnEscape);
-    return () => {
-      document.removeEventListener("keydown", handleCloseOnEscape);
-    };
-  }, []);
-
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>
           &times;
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

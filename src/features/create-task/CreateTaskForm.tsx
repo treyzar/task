@@ -1,10 +1,11 @@
 import React from "react";
 import { graphqlClient } from "../../shared/api/graphqlClient";
 import { getUsers } from "../../entities/user/user.api";
+import { getLabels } from "../../entities/label/label.api";
 import type { User } from "../../entities/user/user.types";
+import type { Label } from "../../entities/label/label.types";
 import { Input } from "../../shared/ui/Input";
 import { Button } from "../../shared/ui/Button";
-import { STATIC_LABELS } from "./constant";
 import "./CreateTaskForm.scss";
 
 const CREATE_TASK_MUTATION = `
@@ -30,9 +31,18 @@ export const CreateTaskForm: React.FC<{
   const [assigneeId, setAssigneeId] = React.useState<number | "">("");
   const [selectedLabels, setSelectedLabels] = React.useState<number[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
+  const [labels, setLabels] = React.useState<Label[]>([]);
 
   React.useEffect(() => {
-    getUsers().then((data) => setUsers(data));
+    const load = async () => {
+      const [usersData, labelsData] = await Promise.all([
+        getUsers(),
+        getLabels()
+      ]);
+      setUsers(usersData);
+      setLabels(labelsData);
+    };
+    load();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,7 +110,7 @@ export const CreateTaskForm: React.FC<{
           <div className="form-group">
             <label>Метки</label>
             <div className="checkbox-list">
-              {STATIC_LABELS.map((label) => (
+              {labels.map((label) => (
                 <label key={label.id}>
                   <input
                     type="checkbox"

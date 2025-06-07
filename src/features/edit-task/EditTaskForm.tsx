@@ -1,13 +1,14 @@
 import React from "react";
 import { getUsers } from "../../entities/user/user.api";
 import { getLabels } from "../../entities/label/label.api";
-import type { User } from "../../entities/task/task.types";
+import type { User } from "../../entities/user/user.types";
+import type { Label } from "../../entities/label/label.types";
 import { updateTask } from "../../entities/task/task.api";
 import { Button } from "../../shared/ui/Button";
 import { Input } from "../../shared/ui/Input";
 import "./EditTaskForm.scss";
 import { getTaskById } from "../../entities/task/task.api";
-import { STATIC_LABELS } from "../create-task/constant";
+
 interface Props {
   taskId: number;
   onTaskUpdated: () => void;
@@ -24,14 +25,16 @@ export const EditTaskForm: React.FC<Props> = ({
   const [assigneeId, setAssigneeId] = React.useState<number | "">("");
   const [selectedLabels, setSelectedLabels] = React.useState<number[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
+  const [labels, setLabels] = React.useState<Label[]>([]);
 
   React.useEffect(() => {
     const load = async () => {
-      const [usersData] = await Promise.all([
+      const [usersData, labelsData] = await Promise.all([
         getUsers(),
         getLabels(),
       ]);
       setUsers(usersData);
+      setLabels(labelsData);
 
       const task = await getTaskById(taskId);
       if (task) {
@@ -121,7 +124,7 @@ export const EditTaskForm: React.FC<Props> = ({
           <div className="form-group">
             <label className="form-label">Метки</label>
             <div className="checkbox-list">
-              {STATIC_LABELS.map((label) => (
+              {labels.map((label) => (
                 <label key={label.id} className="checkbox-label">
                   <input
                     type="checkbox"

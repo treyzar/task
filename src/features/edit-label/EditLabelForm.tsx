@@ -24,19 +24,20 @@ export const EditLabelForm: React.FC<Props> = ({
     e.preventDefault();
 
     await updateLabel(labelId, captionInput, colorInput);
-
     onUpdated();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="edit-label-form">
       <div className="form-group">
         <label>Название метки</label>
         <Input
           type="text"
           value={captionInput}
           onChange={(e) => setCaption(e.target.value)}
+          placeholder="Введите название"
           required
+          className="color-input"
         />
       </div>
 
