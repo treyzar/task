@@ -101,6 +101,155 @@ apply_metadata '{"type":"pg_create_object_relationship","args":{"table":{"schema
 # TaskLabels.label (object)
 apply_metadata '{"type":"pg_create_object_relationship","args":{"table":{"schema":"public","name":"task_labels"},"name":"label","using":{"foreign_key_constraint_on":"label_id"},"source":"default"}}' "TaskLabels.label object"
 
+# Добавляем разрешения на операции
+echo "🔒 Setting up permissions..."
+
+# Разрешения для users
+apply_metadata '{
+  "type": "pg_create_insert_permission",
+  "args": {
+    "table": {"schema": "public", "name": "users"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "check": {},
+      "columns": ["first_name", "last_name", "bio"]
+    }
+  }
+}' "Users insert permission"
+
+apply_metadata '{
+  "type": "pg_create_update_permission",
+  "args": {
+    "table": {"schema": "public", "name": "users"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "columns": ["first_name", "last_name", "bio"],
+      "filter": {},
+      "check": {}
+    }
+  }
+}' "Users update permission"
+
+apply_metadata '{
+  "type": "pg_create_delete_permission",
+  "args": {
+    "table": {"schema": "public", "name": "users"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "filter": {}
+    }
+  }
+}' "Users delete permission"
+
+# Разрешения для labels
+apply_metadata '{
+  "type": "pg_create_insert_permission",
+  "args": {
+    "table": {"schema": "public", "name": "labels"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "check": {},
+      "columns": ["caption", "color"]
+    }
+  }
+}' "Labels insert permission"
+
+apply_metadata '{
+  "type": "pg_create_update_permission",
+  "args": {
+    "table": {"schema": "public", "name": "labels"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "columns": ["caption", "color"],
+      "filter": {},
+      "check": {}
+    }
+  }
+}' "Labels update permission"
+
+apply_metadata '{
+  "type": "pg_create_delete_permission",
+  "args": {
+    "table": {"schema": "public", "name": "labels"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "filter": {}
+    }
+  }
+}' "Labels delete permission"
+
+# Разрешения для tasks
+apply_metadata '{
+  "type": "pg_create_insert_permission",
+  "args": {
+    "table": {"schema": "public", "name": "tasks"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "check": {},
+      "columns": ["title", "description", "assignee_id"]
+    }
+  }
+}' "Tasks insert permission"
+
+apply_metadata '{
+  "type": "pg_create_update_permission",
+  "args": {
+    "table": {"schema": "public", "name": "tasks"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "columns": ["title", "description", "assignee_id"],
+      "filter": {},
+      "check": {}
+    }
+  }
+}' "Tasks update permission"
+
+apply_metadata '{
+  "type": "pg_create_delete_permission",
+  "args": {
+    "table": {"schema": "public", "name": "tasks"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "filter": {}
+    }
+  }
+}' "Tasks delete permission"
+
+# Разрешения для task_labels
+apply_metadata '{
+  "type": "pg_create_insert_permission",
+  "args": {
+    "table": {"schema": "public", "name": "task_labels"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "check": {},
+      "columns": ["task_id", "label_id"]
+    }
+  }
+}' "Task labels insert permission"
+
+apply_metadata '{
+  "type": "pg_create_delete_permission",
+  "args": {
+    "table": {"schema": "public", "name": "task_labels"},
+    "source": "default",
+    "role": "anonymous",
+    "permission": {
+      "filter": {}
+    }
+  }
+}' "Task labels delete permission"
+
 # Проверяем статус метаданных
 echo "🔍 Checking metadata status..."
 curl -s -X GET http://graphql-engine:8080/v1/metadata \
