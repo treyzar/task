@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider as ReduxProvider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import type { ReactNode } from "react";
+import { store } from "../store";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,14 +12,6 @@ const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000,
     },
   },
-});
-
-const initialReducer = {
-  _dummy: (state = null) => state,
-};
-
-const store = configureStore({
-  reducer: initialReducer,
 });
 
 interface ProvidersProps {

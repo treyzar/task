@@ -10,7 +10,7 @@ export interface Label {
   id: number;
   caption: string;
   color: string;
-  tasks?: Task[];
+  task_labels?: TaskLabel[];
 }
 
 export interface Task {
@@ -18,6 +18,7 @@ export interface Task {
   title: string;
   description: string | null;
   created_at: string;
+  assignee_id?: number | null;
   assignee?: User | null;
   labels?: Label[];
 }
@@ -27,4 +28,24 @@ export interface TaskLabel {
   label_id: number;
   task?: Task;
   label?: Label;
+}
+
+export interface TaskInput {
+  title: string;
+  description: string | null;
+  assignee_id?: number | null;
+  assignee?: User | null;
+  labels?: Label[];
+}
+
+export interface TaskResponse {
+  id: number;
+  title: string;
+  description: string | null;
+  created_at: string;
+  assignee_id: number | null;
+  assignee: User | null;
+  task_labels: Array<{
+    label: Label;
+  }>;
 }

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Task, User, Label } from '../types';
 import styles from './Form.module.scss';
+import { useAppSelector } from '../store/hooks';
 
 interface TaskFormProps {
   task?: Task;
@@ -12,11 +13,22 @@ interface TaskFormProps {
 
 export default function TaskForm({ task, users, labels, onSubmit, onClose }: TaskFormProps) {
   const [formData, setFormData] = useState({
-    title: task?.title || '',
-    description: task?.description || '',
-    selectedUser: task?.assignee?.id || '',
-    selectedLabels: task?.labels?.map(l => l.id) || [],
+    title: '',
+    description: '',
+    selectedUser: '',
+    selectedLabels: [] as number[],
   });
+
+  useEffect(() => {
+    if (task) {
+      setFormData({
+        title: task.title,
+        description: task.description || '',
+        selectedUser: task.assignee?.id.toString() || '',
+        selectedLabels: task.labels?.map(l => l.id) || [],
+      });
+    }
+  }, [task]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

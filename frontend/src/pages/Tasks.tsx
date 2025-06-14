@@ -1,19 +1,27 @@
 import { Assignment, Schedule, Add } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect } from "react";
 import styles from "./Tasks.module.scss";
-import { useTasks } from "../hooks/useTasks";
-import { useUsers } from "../hooks/useUsers";
-import { useLabels } from "../hooks/useLabels";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
 import type { Task } from "../types";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { fetchTasks, createTask, updateTask } from "../store/slices/tasksSlice";
+import { fetchUsers } from "../store/slices/usersSlice";
+import { fetchLabels } from "../store/slices/labelsSlice";
+import { openModal, closeModal } from "../store/slices/modalSlice";
 
 export default function Tasks() {
-  const { tasks, isLoading: tasksLoading, error: tasksError, createTask, updateTask } = useTasks();
-  const { users, isLoading: usersLoading } = useUsers();
-  const { labels, isLoading: labelsLoading } = useLabels();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | undefined>();
+  const dispatch = useAppDispatch();
+  const { items: tasks, isLoading: tasksLoading, error: tasksError } = useAppSelector(state => state.tasks);
+  const { items: users, isLoading: usersLoading } = useAppSelector(state => state.users);
+  const { items: labels, isLoading: labelsLoading } = useAppSelector(state => state.labels);
+  const { isOpen: isModalOpen, selectedTask } = useAppSelector(state => state.modal);
+
+  useEffect(() => {
+    dispatch(fetchTasks());
+    dispatch(fetchUsers());
+    dispatch(fetchLabels());
+  }, [dispatch]);
 
   const isLoading = tasksLoading || usersLoading || labelsLoading;
 
@@ -29,14 +37,15 @@ export default function Tasks() {
 
   const handleSubmit = (data: Omit<Task, "id" | "created_at">) => {
     if (selectedTask) {
-      updateTask({
+      dispatch(updateTask({
         ...data,
         id: selectedTask.id,
         created_at: selectedTask.created_at,
-      });
+      }));
     } else {
-      createTask(data);
+      dispatch(createTask(data));
     }
+    dispatch(closeModal());
   };
 
   return (
@@ -45,10 +54,7 @@ export default function Tasks() {
         <h1 className={styles.title}>Задачи</h1>
         <button
           className={styles.addButton}
-          onClick={() => {
-            setSelectedTask(undefined);
-            setIsModalOpen(true);
-          }}
+          onClick={() => dispatch(openModal(undefined))}
         >
           <Add />
           Добавить задачу
@@ -60,10 +66,7 @@ export default function Tasks() {
           <div
             key={task.id}
             className={styles.card}
-            onClick={() => {
-              setSelectedTask(task);
-              setIsModalOpen(true);
-            }}
+            onClick={() => dispatch(openModal(task))}
           >
             <div className={styles.cardHeader}>
               <div className={styles.icon}>
@@ -112,10 +115,7 @@ export default function Tasks() {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedTask(undefined);
-        }}
+        onClose={() => dispatch(closeModal())}
         title={selectedTask ? "Редактировать задачу" : "Создать задачу"}
       >
         <TaskForm
@@ -123,10 +123,7 @@ export default function Tasks() {
           users={users || []}
           labels={labels || []}
           onSubmit={handleSubmit}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedTask(undefined);
-          }}
+          onClose={() => dispatch(closeModal())}
         />
       </Modal>
     </div>
